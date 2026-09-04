@@ -267,3 +267,11 @@ blockquote {
   background: #f6e2e0;
   color: #94382f;
 }
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.5em 0;
+}

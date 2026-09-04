@@ -23,6 +23,9 @@ domain model and a documented setup.
   and enrolling require a signed-in user.
 - **Capacity is enforced**: an activity refuses enrolments once it is full, and
   it cannot offer more places than its main room holds.
+- **Paginated lists** that keep the active filters in the page links, and
+  querysets that load their related objects up front instead of one row at a
+  time.
 
 ## Data model
 
@@ -144,13 +147,15 @@ center-management/
 - **The last place is a race.** Counting the enrolments and inserting the new
   one happen inside a single transaction with a row lock, so two people
   clicking at the same time cannot both take the last place.
+- **Listing activities costs three queries, not one per row.** The list view
+  annotates the enrolment count and the model reuses that annotation when it
+  is there, so `places_left` does not turn into an N+1.
 - **Read is public, write is authenticated.** A visitor can browse the
   programme; only signed-in staff change it. Logging out is a POST form, as
   Django requires since 4.1.
 
 ## Roadmap
 
-- [ ] Pagination and query optimisation on the list views.
 - [ ] Test suite covering the models, the enrolment rules and the views.
 - [ ] Docker Compose setup with PostgreSQL and a CI workflow.
 

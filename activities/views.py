@@ -12,6 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -39,9 +40,18 @@ class ActivityListView(ListView):
     model = Activity
     template_name = "activities/list.html"
     context_object_name = "activities"
+    paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = (
+            super()
+            .get_queryset()
+            .select_related("instructor", "main_room")
+            .annotate(enrollment_count=Count("enrollments"))
+            # annotate() adds a GROUP BY, which drops Meta.ordering and would
+            # make pagination non-deterministic, so ordering is restated here.
+            .order_by("starts_at")
+        )
         category = self.request.GET.get("category")
         instructor_id = self.request.GET.get("instructor")
 
@@ -63,6 +73,14 @@ class ActivityDetailView(DetailView):
     model = Activity
     template_name = "activities/detail.html"
     context_object_name = "activity"
+
+    def get_queryset(self):
+        return (
+            super()
+            .get_queryset()
+            .select_related("instructor", "main_room")
+            .prefetch_related("secondary_rooms", "members")
+        )
 
 
 class ActivityCreateView(LoginRequiredMixin, CreateView):
@@ -160,6 +178,7 @@ class MemberListView(ListView):
     model = Member
     template_name = "members/list.html"
     context_object_name = "members"
+    paginate_by = 10
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -180,6 +199,9 @@ class MemberDetailView(DetailView):
     model = Member
     template_name = "members/detail.html"
     context_object_name = "member"
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("activities")
 
 
 class MemberCreateView(LoginRequiredMixin, CreateView):
@@ -209,12 +231,16 @@ class InstructorListView(ListView):
     model = Instructor
     template_name = "instructors/list.html"
     context_object_name = "instructors"
+    paginate_by = 10
 
 
 class InstructorDetailView(DetailView):
     model = Instructor
     template_name = "instructors/detail.html"
     context_object_name = "instructor"
+
+    def get_queryset(self):
+        return super().get_queryset().prefetch_related("activities")
 
 
 class InstructorCreateView(LoginRequiredMixin, CreateView):
@@ -244,12 +270,16 @@ class RoomListView(ListView):
     model = Room
     template_name = "rooms/list.html"
     context_object_name = "rooms"
+    paginate_by = 10
 
 
 class RoomDetailView(DetailView):
     model = Room
     template_name = "rooms/detail.html"
     context_object_name = "room"
+
+    def get_queryset(self):
+        return super().get_queryset().select_related("manager")
 
 
 class RoomCreateView(LoginRequiredMixin, CreateView):

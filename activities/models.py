@@ -122,6 +122,10 @@ class Activity(models.Model):
 
     @property
     def places_taken(self):
+        # ActivityListView annotates this count, so listing activities does not
+        # run one COUNT query per row.
+        if hasattr(self, "enrollment_count"):
+            return self.enrollment_count
         return self.enrollments.count()
 
     @property
