@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Enrol in {{ activity.name }}{% endblock %}
+
+{% block content %}
+  <h1>Enrol a member in {{ activity.name }}</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Enrol</button>
+    <a class="btn" href="{% url 'activity-detail' activity.pk %}">Back</a>
+  </form>
+{% endblock %}

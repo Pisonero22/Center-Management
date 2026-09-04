@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Activities{% endblock %}
+
+{% block content %}
+  <h1>Activities</h1>
+
+  <form method="get" class="filters">
+    <label for="category">Category:</label>
+    <select name="category" id="category">
+      <option value="">All</option>
+      {% for value, label in categories %}
+        <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="instructor">Instructor:</label>
+    <select name="instructor" id="instructor">
+      <option value="">All</option>
+      {% for instructor in instructors %}
+        <option value="{{ instructor.id }}" {% if request.GET.instructor == instructor.id|stringformat:"s" %}selected{% endif %}>
+          {{ instructor.full_name }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <button class="btn" type="submit">Filter</button>
+    <a class="btn" href="{% url 'activity-list' %}">Clear</a>
+  </form>
+
+  <hr>
+
+  <a class="btn" href="{% url 'activity-create' %}">New activity</a>
+
+  <ul>
+    {% for activity in activities %}
+      <li>
+        <a href="{% url 'activity-detail' activity.pk %}">
+          {{ activity.name }} ({{ activity.get_category_display }}) — {{ activity.starts_at|date:"d M Y, H:i" }}
+        </a>
+      </li>
+    {% empty %}
+      <li>No activities match those filters.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

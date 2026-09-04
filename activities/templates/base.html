@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Center Management{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="logo"><a href="{% url 'home' %}">Center Management</a></h1>
+      <nav class="main-nav">
+        <a href="{% url 'activity-list' %}">Activities</a>
+        <a href="{% url 'member-list' %}">Members</a>
+        <a href="{% url 'instructor-list' %}">Instructors</a>
+        <a href="{% url 'room-list' %}">Rooms</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

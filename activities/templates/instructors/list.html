@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Instructors{% endblock %}
+
+{% block content %}
+  <h1>Instructors</h1>
+
+  <a class="btn" href="{% url 'instructor-create' %}">New instructor</a>
+
+  <ul>
+    {% for instructor in instructors %}
+      <li>
+        <a href="{% url 'instructor-detail' instructor.pk %}">{{ instructor.full_name }} — {{ instructor.specialty }}</a>
+      </li>
+    {% empty %}
+      <li>No instructors registered.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

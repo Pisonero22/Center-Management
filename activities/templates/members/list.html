@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Members{% endblock %}
+
+{% block content %}
+  <h1>Members</h1>
+
+  <a class="btn" href="{% url 'member-create' %}">New member</a>
+
+  <hr>
+
+  <form method="get" class="filters">
+    <label for="activity">Filter by activity:</label>
+    <select name="activity" id="activity">
+      <option value="">All</option>
+      {% for activity in activities %}
+        <option value="{{ activity.id }}" {% if request.GET.activity == activity.id|stringformat:"s" %}selected{% endif %}>
+          {{ activity.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <button class="btn" type="submit">Filter</button>
+    <a class="btn" href="{% url 'member-list' %}">Clear</a>
+  </form>
+
+  <ul>
+    {% for member in members %}
+      <li>
+        <a href="{% url 'member-detail' member.pk %}">{{ member.full_name }} ({{ member.email }})</a>
+      </li>
+    {% empty %}
+      <li>No members registered.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

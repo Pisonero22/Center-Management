@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Enrolments — {{ activity.name }}{% endblock %}
+
+{% block content %}
+  <h1>Members enrolled in {{ activity.name }}</h1>
+
+  <ul>
+    {% for enrollment in enrollments %}
+      <li>
+        <a href="{% url 'member-detail' enrollment.member.pk %}">{{ enrollment.member.full_name }}</a>
+        <span class="muted">since {{ enrollment.created_at|date:"d M Y" }}</span>
+        <form method="post" action="{% url 'enrollment-remove' activity.pk enrollment.member.pk %}" class="inline-form">
+          {% csrf_token %}
+          <button class="btn btn-danger" type="submit">Remove</button>
+        </form>
+      </li>
+    {% empty %}
+      <li>Nobody is enrolled yet.</li>
+    {% endfor %}
+  </ul>
+
+  <p>
+    <a class="btn" href="{% url 'activity-enroll' activity.pk %}">Enrol a member</a>
+    <a class="btn" href="{% url 'activity-detail' activity.pk %}">Back</a>
+  </p>
+{% endblock %}

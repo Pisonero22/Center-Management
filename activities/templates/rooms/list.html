@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Rooms{% endblock %}
+
+{% block content %}
+  <h1>Rooms</h1>
+
+  <a class="btn" href="{% url 'room-create' %}">New room</a>
+
+  <ul>
+    {% for room in rooms %}
+      <li>
+        <a href="{% url 'room-detail' room.pk %}">{{ room.name }} — capacity {{ room.capacity }}</a>
+      </li>
+    {% empty %}
+      <li>No rooms registered.</li>
+    {% endfor %}
+  </ul>
+{% endblock %}

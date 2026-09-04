@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ member.full_name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ member.full_name }}</h1>
+
+  <p><strong>Email:</strong> {{ member.email }}</p>
+  <p><strong>Phone:</strong> {{ member.phone|default:"—" }}</p>
+
+  <p><strong>Activities:</strong>
+    {% for activity in member.activities.all %}
+      <a href="{% url 'activity-detail' activity.pk %}">{{ activity.name }}</a>{% if not forloop.last %}, {% endif %}
+    {% empty %}
+      none
+    {% endfor %}
+  </p>
+
+  <p>
+    <a class="btn" href="{% url 'member-update' member.pk %}">Edit</a>
+    <a class="btn" href="{% url 'member-delete' member.pk %}">Delete</a>
+    <a class="btn" href="{% url 'member-list' %}">Back to list</a>
+  </p>
+{% endblock %}

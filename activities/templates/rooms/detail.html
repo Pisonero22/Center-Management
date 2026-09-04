@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}{{ room.name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ room.name }}</h1>
+
+  <p><strong>Capacity:</strong> {{ room.capacity }}</p>
+  <p><strong>Location:</strong> {{ room.location }}</p>
+  <p><strong>Managed by:</strong> {{ room.manager|default:"Not assigned" }}</p>
+
+  <p>
+    <a class="btn" href="{% url 'room-update' room.pk %}">Edit</a>
+    <a class="btn" href="{% url 'room-delete' room.pk %}">Delete</a>
+    <a class="btn" href="{% url 'room-list' %}">Back to list</a>
+  </p>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}{{ instructor.full_name }}{% endblock %}
+
+{% block content %}
+  <h1>{{ instructor.full_name }}</h1>
+
+  <p><strong>Specialty:</strong> {{ instructor.specialty }}</p>
+
+  <p><strong>Activities:</strong>
+    {% for activity in instructor.activities.all %}
+      <a href="{% url 'activity-detail' activity.pk %}">{{ activity.name }}</a>{% if not forloop.last %}, {% endif %}
+    {% empty %}
+      none
+    {% endfor %}
+  </p>
+
+  <p>
+    <a class="btn" href="{% url 'instructor-update' instructor.pk %}">Edit</a>
+    <a class="btn" href="{% url 'instructor-delete' instructor.pk %}">Delete</a>
+    <a class="btn" href="{% url 'instructor-list' %}">Back to list</a>
+  </p>
+{% endblock %}

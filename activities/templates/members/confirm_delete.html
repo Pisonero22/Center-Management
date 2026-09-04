@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Delete member{% endblock %}
+
+{% block content %}
+  <h1>Delete "{{ object.full_name }}"?</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <button class="btn" type="submit">Yes, delete</button>
+    <a class="btn" href="{% url 'member-detail' object.pk %}">Cancel</a>
+  </form>
+{% endblock %}
