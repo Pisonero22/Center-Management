@@ -5,7 +5,9 @@
 {% block content %}
   <h1>Members</h1>
 
+  {% if user.is_authenticated %}
   <a class="btn" href="{% url 'member-create' %}">New member</a>
+  {% endif %}
 
   <hr>
 

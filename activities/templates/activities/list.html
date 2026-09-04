@@ -30,7 +30,9 @@
 
   <hr>
 
+  {% if user.is_authenticated %}
   <a class="btn" href="{% url 'activity-create' %}">New activity</a>
+  {% endif %}
 
   <ul>
     {% for activity in activities %}

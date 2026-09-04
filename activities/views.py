@@ -3,8 +3,13 @@
 Class-based views cover the repetitive CRUD for the four entities; the
 enrolment flow is written as plain function views because it is the part with
 actual business rules.
+
+Browsing is open to anyone; every view that writes to the database requires an
+authenticated user.
 """
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
@@ -58,21 +63,21 @@ class ActivityDetailView(DetailView):
     context_object_name = "activity"
 
 
-class ActivityCreateView(CreateView):
+class ActivityCreateView(LoginRequiredMixin, CreateView):
     model = Activity
     form_class = ActivityForm
     template_name = "activities/form.html"
     success_url = reverse_lazy("activity-list")
 
 
-class ActivityUpdateView(UpdateView):
+class ActivityUpdateView(LoginRequiredMixin, UpdateView):
     model = Activity
     form_class = ActivityForm
     template_name = "activities/form.html"
     success_url = reverse_lazy("activity-list")
 
 
-class ActivityDeleteView(DeleteView):
+class ActivityDeleteView(LoginRequiredMixin, DeleteView):
     model = Activity
     template_name = "activities/confirm_delete.html"
     success_url = reverse_lazy("activity-list")
@@ -81,6 +86,7 @@ class ActivityDeleteView(DeleteView):
 # --------------------------------------------------------------------------
 # Enrolments
 # --------------------------------------------------------------------------
+@login_required
 def enroll_member(request, pk):
     """Enrol a member in an activity, ignoring duplicates."""
     activity = get_object_or_404(Activity, pk=pk)
@@ -113,6 +119,7 @@ def activity_enrollments(request, pk):
     )
 
 
+@login_required
 @require_POST
 def remove_enrollment(request, pk, member_id):
     """Remove a member from an activity. POST only: it changes state."""
@@ -151,21 +158,21 @@ class MemberDetailView(DetailView):
     context_object_name = "member"
 
 
-class MemberCreateView(CreateView):
+class MemberCreateView(LoginRequiredMixin, CreateView):
     model = Member
     form_class = MemberForm
     template_name = "members/form.html"
     success_url = reverse_lazy("member-list")
 
 
-class MemberUpdateView(UpdateView):
+class MemberUpdateView(LoginRequiredMixin, UpdateView):
     model = Member
     form_class = MemberForm
     template_name = "members/form.html"
     success_url = reverse_lazy("member-list")
 
 
-class MemberDeleteView(DeleteView):
+class MemberDeleteView(LoginRequiredMixin, DeleteView):
     model = Member
     template_name = "members/confirm_delete.html"
     success_url = reverse_lazy("member-list")
@@ -186,21 +193,21 @@ class InstructorDetailView(DetailView):
     context_object_name = "instructor"
 
 
-class InstructorCreateView(CreateView):
+class InstructorCreateView(LoginRequiredMixin, CreateView):
     model = Instructor
     form_class = InstructorForm
     template_name = "instructors/form.html"
     success_url = reverse_lazy("instructor-list")
 
 
-class InstructorUpdateView(UpdateView):
+class InstructorUpdateView(LoginRequiredMixin, UpdateView):
     model = Instructor
     form_class = InstructorForm
     template_name = "instructors/form.html"
     success_url = reverse_lazy("instructor-list")
 
 
-class InstructorDeleteView(DeleteView):
+class InstructorDeleteView(LoginRequiredMixin, DeleteView):
     model = Instructor
     template_name = "instructors/confirm_delete.html"
     success_url = reverse_lazy("instructor-list")
@@ -221,21 +228,21 @@ class RoomDetailView(DetailView):
     context_object_name = "room"
 
 
-class RoomCreateView(CreateView):
+class RoomCreateView(LoginRequiredMixin, CreateView):
     model = Room
     form_class = RoomForm
     template_name = "rooms/form.html"
     success_url = reverse_lazy("room-list")
 
 
-class RoomUpdateView(UpdateView):
+class RoomUpdateView(LoginRequiredMixin, UpdateView):
     model = Room
     form_class = RoomForm
     template_name = "rooms/form.html"
     success_url = reverse_lazy("room-list")
 
 
-class RoomDeleteView(DeleteView):
+class RoomDeleteView(LoginRequiredMixin, DeleteView):
     model = Room
     template_name = "rooms/confirm_delete.html"
     success_url = reverse_lazy("room-list")

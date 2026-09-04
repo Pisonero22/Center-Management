@@ -5,7 +5,9 @@
 {% block content %}
   <h1>Rooms</h1>
 
+  {% if user.is_authenticated %}
   <a class="btn" href="{% url 'room-create' %}">New room</a>
+  {% endif %}
 
   <ul>
     {% for room in rooms %}

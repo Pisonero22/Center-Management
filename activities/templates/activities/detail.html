@@ -31,13 +31,17 @@
   </p>
 
   <p>
-    <a class="btn" href="{% url 'activity-enroll' activity.pk %}">Enrol a member</a>
     <a class="btn" href="{% url 'activity-enrollments' activity.pk %}">View enrolments</a>
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'activity-enroll' activity.pk %}">Enrol a member</a>
+    {% endif %}
   </p>
 
   <p>
-    <a class="btn" href="{% url 'activity-update' activity.pk %}">Edit</a>
-    <a class="btn" href="{% url 'activity-delete' activity.pk %}">Delete</a>
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'activity-update' activity.pk %}">Edit</a>
+      <a class="btn" href="{% url 'activity-delete' activity.pk %}">Delete</a>
+    {% endif %}
     <a class="btn" href="{% url 'activity-list' %}">Back</a>
   </p>
 {% endblock %}

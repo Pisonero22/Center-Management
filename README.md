@@ -19,6 +19,8 @@ domain model and a documented setup.
   for the enrolments of an activity.
 - A **`seed_demo`** management command that fills the database with a small
   demo dataset in one line.
+- **Authentication**: the catalogue is public, but creating, editing, deleting
+  and enrolling require a signed-in user.
 
 ## Data model
 
@@ -137,10 +139,12 @@ center-management/
   a CSRF token, not a link — a GET request should never change state.
 - **The database enforces the invariants it can.** Uniqueness of an enrolment is
   a constraint, not only a check in the view.
+- **Read is public, write is authenticated.** A visitor can browse the
+  programme; only signed-in staff change it. Logging out is a POST form, as
+  Django requires since 4.1.
 
 ## Roadmap
 
-- [ ] Authentication: only signed-in staff can create, edit or delete.
 - [ ] Enforce the capacity of an activity when enrolling.
 - [ ] Pagination and query optimisation on the list views.
 - [ ] Test suite covering the models, the enrolment rules and the views.

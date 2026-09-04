@@ -210,3 +210,28 @@ blockquote {
   color: var(--muted);
   font-size: 0.9rem;
 }
+
+/* Authentication bar */
+.nav-user {
+  margin-left: 1rem;
+  color: #fff;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+.btn-link {
+  background: none;
+  border: none;
+  color: #fff;
+  margin-left: 1rem;
+  padding: 0;
+  font-size: 0.95rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.btn-link:hover {
+  background: none;
+}
+.error {
+  color: #b5483d;
+  font-weight: bold;
+}

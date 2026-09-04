@@ -10,8 +10,10 @@
   <p><strong>Managed by:</strong> {{ room.manager|default:"Not assigned" }}</p>
 
   <p>
-    <a class="btn" href="{% url 'room-update' room.pk %}">Edit</a>
-    <a class="btn" href="{% url 'room-delete' room.pk %}">Delete</a>
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'room-update' room.pk %}">Edit</a>
+      <a class="btn" href="{% url 'room-delete' room.pk %}">Delete</a>
+    {% endif %}
     <a class="btn" href="{% url 'room-list' %}">Back to list</a>
   </p>
 {% endblock %}

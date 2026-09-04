@@ -10,10 +10,12 @@
       <li>
         <a href="{% url 'member-detail' enrollment.member.pk %}">{{ enrollment.member.full_name }}</a>
         <span class="muted">since {{ enrollment.created_at|date:"d M Y" }}</span>
-        <form method="post" action="{% url 'enrollment-remove' activity.pk enrollment.member.pk %}" class="inline-form">
-          {% csrf_token %}
-          <button class="btn btn-danger" type="submit">Remove</button>
-        </form>
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'enrollment-remove' activity.pk enrollment.member.pk %}" class="inline-form">
+            {% csrf_token %}
+            <button class="btn btn-danger" type="submit">Remove</button>
+          </form>
+        {% endif %}
       </li>
     {% empty %}
       <li>Nobody is enrolled yet.</li>
@@ -21,7 +23,9 @@
   </ul>
 
   <p>
-    <a class="btn" href="{% url 'activity-enroll' activity.pk %}">Enrol a member</a>
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'activity-enroll' activity.pk %}">Enrol a member</a>
+    {% endif %}
     <a class="btn" href="{% url 'activity-detail' activity.pk %}">Back</a>
   </p>
 {% endblock %}
