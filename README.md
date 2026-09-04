@@ -117,6 +117,22 @@ python manage.py createsuperuser
 No secret is committed to the repository: `settings.py` reads these from the
 environment and refuses to start with the development key when debug is off.
 
+## Tests
+
+```bash
+python manage.py test
+```
+
+Twenty tests, no extra dependencies, covering the parts that can actually break:
+
+| Area          | What is checked                                                        |
+| ------------- | ---------------------------------------------------------------------- |
+| Models        | Uniqueness of an enrolment, capacity arithmetic, room-size validation   |
+| Permissions   | Every write view redirects an anonymous visitor to the login page       |
+| Enrolments    | Duplicates, a full activity, and removal only through POST              |
+| Filters       | Activities by category and instructor, members by activity              |
+| Efficiency    | The activity list runs three queries regardless of how many rows it has |
+
 ## Project layout
 
 ```
@@ -129,6 +145,7 @@ center-management/
 │   ├── admin.py         # admin configuration
 │   ├── urls.py          # application routes
 │   ├── management/      # seed_demo command
+│   ├── tests/           # model and view tests
 │   ├── static/css/      # stylesheet
 │   └── templates/       # base layout and one folder per entity
 ├── manage.py
@@ -156,7 +173,6 @@ center-management/
 
 ## Roadmap
 
-- [ ] Test suite covering the models, the enrolment rules and the views.
 - [ ] Docker Compose setup with PostgreSQL and a CI workflow.
 
 ## Licence
