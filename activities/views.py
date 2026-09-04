@@ -11,7 +11,6 @@ authenticated user.
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db import transaction
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
@@ -25,8 +24,9 @@ from django.views.generic import (
     UpdateView,
 )
 
+from . import services
 from .forms import ActivityForm, EnrollmentForm, InstructorForm, MemberForm, RoomForm
-from .models import Activity, Enrollment, Instructor, Member, Room
+from .models import Activity, Instructor, Member, Room
 
 
 class HomeView(TemplateView):
@@ -115,25 +115,15 @@ def enroll_member(request, pk):
         form = EnrollmentForm(request.POST)
         if form.is_valid():
             member = form.cleaned_data["member"]
-            # Two people can hit "Enrol" for the last place at the same time,
-            # so the count and the insert happen inside one transaction. The
-            # row lock is a no-op on SQLite but does the work on PostgreSQL.
-            with transaction.atomic():
-                locked = Activity.objects.select_for_update().get(pk=activity.pk)
-                if locked.is_full:
-                    places = "place" if locked.capacity == 1 else "places"
-                    messages.error(
-                        request,
-                        f"{locked.name} is full ({locked.capacity} {places}).",
-                    )
+            try:
+                _, created = services.enroll(activity, member)
+            except services.ActivityFull as error:
+                messages.error(request, str(error))
+            else:
+                if created:
+                    messages.success(request, f"{member} is now enrolled.")
                 else:
-                    _, created = Enrollment.objects.get_or_create(
-                        activity=locked, member=member
-                    )
-                    if created:
-                        messages.success(request, f"{member} is now enrolled.")
-                    else:
-                        messages.info(request, f"{member} was already enrolled.")
+                    messages.info(request, f"{member} was already enrolled.")
             return redirect("activity-enrollments", pk=pk)
     else:
         form = EnrollmentForm()
@@ -162,10 +152,7 @@ def activity_enrollments(request, pk):
 def remove_enrollment(request, pk, member_id):
     """Remove a member from an activity. POST only: it changes state."""
     activity = get_object_or_404(Activity, pk=pk)
-    deleted, _ = Enrollment.objects.filter(
-        activity=activity, member_id=member_id
-    ).delete()
-    if deleted:
+    if services.unenroll(activity, member_id):
         messages.success(request, "Enrolment removed.")
 
     return redirect("activity-enrollments", pk=pk)
