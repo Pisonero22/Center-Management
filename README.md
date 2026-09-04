@@ -1,5 +1,7 @@
 # Center Management
 
+[![tests](https://github.com/Pisonero22/Center-Management/actions/workflows/tests.yml/badge.svg)](https://github.com/Pisonero22/Center-Management/actions/workflows/tests.yml)
+
 A Django application for running a cultural centre: schedule activities, assign
 instructors and rooms, register members and keep track of who is enrolled in what.
 
@@ -95,24 +97,31 @@ level that the same person cannot take two places in one activity.
 git clone https://github.com/Pisonero22/Center-Management.git
 cd Center-Management
 
+make demo         # virtualenv, dependencies, .env, migrations and sample data
+make superuser    # an account to sign in with
+make run          # http://127.0.0.1:8000/
+```
+
+`make demo` runs [`scripts/setup.sh`](scripts/setup.sh), which creates the
+virtualenv, installs the dependencies, writes a `.env` with a freshly generated
+secret key and applies the migrations. `make help` lists the rest
+(`make test`, `make check`, `make clean`).
+
+Without `make`, the same by hand:
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-
-cp .env.example .env               # then edit DJANGO_SECRET_KEY
-
+cp .env.example .env               # then set DJANGO_SECRET_KEY
 python manage.py migrate
 python manage.py seed_demo         # optional: demo data
+python manage.py createsuperuser   # no accounts ship with the project
 python manage.py runserver
 ```
 
-The site is then available at <http://127.0.0.1:8000/>.
-
-To use the admin at `/admin/`, create a superuser first:
-
-```bash
-python manage.py createsuperuser
-```
+There are no default credentials: browsing is public and the account you create
+with `createsuperuser` is the one that can write and reach `/admin/`.
 
 ## Configuration
 
@@ -128,8 +137,11 @@ environment and refuses to start with the development key when debug is off.
 ## Tests
 
 ```bash
-python manage.py test
+make test          # or: python manage.py test
 ```
+
+Every push and pull request runs the same suite on GitHub Actions
+([`.github/workflows/tests.yml`](.github/workflows/tests.yml)).
 
 Twenty tests, no extra dependencies, covering the parts that can actually break:
 
@@ -156,6 +168,9 @@ center-management/
 │   ├── tests/           # model and view tests
 │   ├── static/css/      # stylesheet
 │   └── templates/       # base layout and one folder per entity
+├── scripts/setup.sh     # one-command environment setup
+├── Makefile             # setup, run, test, check, superuser, clean
+├── .github/workflows/   # CI: system checks and tests on every push
 ├── manage.py
 └── requirements.txt
 ```
@@ -181,7 +196,8 @@ center-management/
 
 ## Roadmap
 
-- [ ] Docker Compose setup with PostgreSQL and a CI workflow.
+- [ ] Docker Compose setup with PostgreSQL.
+- [ ] REST API with Django REST Framework.
 
 ## Licence
 
