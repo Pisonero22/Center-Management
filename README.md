@@ -28,6 +28,8 @@ domain model and a documented setup.
 - **Paginated lists** that keep the active filters in the page links, and
   querysets that load their related objects up front instead of one row at a
   time.
+- A **REST API** over the same domain, with an OpenAPI schema and a browsable
+  documentation page.
 
 ## Screenshots
 
@@ -36,6 +38,32 @@ domain model and a documented setup.
 | ![Activity list](docs/screenshots/activities.png) | ![Activity detail](docs/screenshots/activity-detail.png) |
 
 ![Enrolments of an activity](docs/screenshots/enrollments.png)
+
+## REST API
+
+A JSON API built with Django REST Framework: browsable at `/api/`, documented at
+`/api/docs/`, with the OpenAPI schema at `/api/schema/`.
+
+| Method | Endpoint | What it does |
+| ------ | -------- | ------------ |
+| `GET` | `/api/activities/` | Paginated list. Query parameters: `category`, `instructor`, `search`, `ordering` |
+| `POST` | `/api/activities/` | Create an activity |
+| `GET` `PUT` `PATCH` `DELETE` | `/api/activities/{id}/` | Read, replace, update or delete one |
+| `GET` | `/api/activities/{id}/enrollments/` | The members enrolled in it |
+| `POST` | `/api/activities/{id}/enrollments/` | Enrol a member: `201` for a new place, `200` if they already had one, `400` when the activity is full |
+| `DELETE` | `/api/activities/{id}/enrollments/{member_id}/` | Release a place |
+| | `/api/members/` `/api/instructors/` `/api/rooms/` | The same CRUD for the other entities |
+
+Reading is public, writing needs an authenticated session — the same rule the
+HTML side applies, expressed as `IsAuthenticatedOrReadOnly`.
+
+```bash
+curl "http://127.0.0.1:8000/api/activities/?category=dance&ordering=starts_at"
+```
+
+Neither the capacity rule nor the room-size validation is restated here: the
+endpoint calls the same `activities/services.py` and the same `Activity.clean()`
+that the form view uses, so the two cannot answer differently.
 
 ## Data model
 
@@ -87,6 +115,7 @@ level that the same person cannot take two places in one activity.
 | ---------- | ------------------------------------------------- |
 | Language   | Python 3.12                                       |
 | Framework  | Django 5.2 (class-based views, ORM, admin)        |
+| API        | Django REST Framework with an OpenAPI schema      |
 | Database   | SQLite locally, PostgreSQL 17 in containers        |
 | Serving    | gunicorn with WhiteNoise for the static files      |
 | Containers | Docker and Docker Compose                          |
@@ -169,15 +198,17 @@ make test          # or: python manage.py test
 Every push and pull request runs the same suite on GitHub Actions
 ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)).
 
-Twenty tests, no extra dependencies, covering the parts that can actually break:
+Thirty-nine tests covering the parts that can actually break:
 
 | Area          | What is checked                                                        |
 | ------------- | ---------------------------------------------------------------------- |
 | Models        | Uniqueness of an enrolment, capacity arithmetic, room-size validation   |
+| Services      | Enrolling, re-enrolling and the refusal when an activity is full        |
 | Permissions   | Every write view redirects an anonymous visitor to the login page       |
 | Enrolments    | Duplicates, a full activity, and removal only through POST              |
 | Filters       | Activities by category and instructor, members by activity              |
 | Efficiency    | The activity list runs three queries regardless of how many rows it has |
+| API           | Status codes, permissions, filters and the enrolment rules over HTTP    |
 
 ## Project layout
 
@@ -186,7 +217,9 @@ center-management/
 ├── config/              # project settings, root URLconf, WSGI/ASGI entry points
 ├── activities/          # the single application
 │   ├── models.py        # Member, Instructor, Room, Activity, Enrollment
+│   ├── services.py      # enrolment rules, shared by the views and the API
 │   ├── views.py         # class-based CRUD + the enrolment flow
+│   ├── api/             # serializers, viewsets and routes for the REST API
 │   ├── forms.py         # model forms
 │   ├── admin.py         # admin configuration
 │   ├── urls.py          # application routes
@@ -219,6 +252,9 @@ center-management/
 - **Listing activities costs three queries, not one per row.** The list view
   annotates the enrolment count and the model reuses that annotation when it
   is there, so `places_left` does not turn into an N+1.
+- **A rule lives in one place.** Enrolling has a capacity check, a duplicate
+  case and a lock; that is in `services.py`, and the form view and the API
+  endpoint both call it rather than each keeping their own copy.
 - **One settings module, two databases.** The engine is picked from the
   environment instead of from a `settings_prod.py`, so the code that runs in the
   container is exactly the code that runs locally.
@@ -228,7 +264,8 @@ center-management/
 
 ## Roadmap
 
-- [ ] REST API with Django REST Framework.
+- [ ] Token or JWT authentication, so the API can be used without a session.
+- [ ] Deploy the container to a small host and point a domain at it.
 
 ## Licence
 
