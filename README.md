@@ -87,7 +87,9 @@ level that the same person cannot take two places in one activity.
 | ---------- | ------------------------------------------------- |
 | Language   | Python 3.12                                       |
 | Framework  | Django 5.2 (class-based views, ORM, admin)        |
-| Database   | SQLite in development                             |
+| Database   | SQLite locally, PostgreSQL 17 in containers        |
+| Serving    | gunicorn with WhiteNoise for the static files      |
+| Containers | Docker and Docker Compose                          |
 | Frontend   | Django templates with a hand-written stylesheet   |
 | Config     | Environment variables loaded from a `.env` file   |
 
@@ -97,10 +99,12 @@ level that the same person cannot take two places in one activity.
 git clone https://github.com/Pisonero22/Center-Management.git
 cd Center-Management
 
-make demo         # virtualenv, dependencies, .env, migrations and sample data
-make superuser    # an account to sign in with
-make run          # http://127.0.0.1:8000/
+make dev          # everything at once: environment, sample data and server
 ```
+
+`make dev` leaves the server running at <http://127.0.0.1:8000/>. In another
+terminal, `make superuser` creates the account that can sign in. The steps are
+also available separately (`make setup`, `make demo`, `make run`).
 
 `make demo` runs [`scripts/setup.sh`](scripts/setup.sh), which creates the
 virtualenv, installs the dependencies, writes a `.env` with a freshly generated
@@ -122,6 +126,28 @@ python manage.py runserver
 
 There are no default credentials: browsing is public and the account you create
 with `createsuperuser` is the one that can write and reach `/admin/`.
+
+## Running with Docker
+
+The same application against PostgreSQL, served by gunicorn:
+
+```bash
+make up               # docker compose up --build -d
+make docker-demo      # optional: sample data
+make docker-superuser # an account to sign in with
+make logs             # follow the logs
+make down             # stop everything
+```
+
+Two services: `db` (PostgreSQL 17, with a named volume so the data survives a
+restart) and `web` (the image built from the `Dockerfile`). The web container
+waits for the database health check before starting, applies the migrations and
+then runs gunicorn as an unprivileged user, with WhiteNoise serving the static
+files — nothing else is needed in front of it.
+
+The database backend is chosen by the environment: `POSTGRES_DB` present means
+PostgreSQL, absent means the local SQLite file. That is why `make run` needs no
+database server and the container needs no separate settings module.
 
 ## Configuration
 
@@ -169,10 +195,13 @@ center-management/
 │   ├── static/css/      # stylesheet
 │   └── templates/       # base layout and one folder per entity
 ├── scripts/setup.sh     # one-command environment setup
-├── Makefile             # setup, run, test, check, superuser, clean
+├── Makefile             # local and container shortcuts
+├── Dockerfile           # application image (gunicorn, non-root)
+├── docker-compose.yml   # application + PostgreSQL
 ├── .github/workflows/   # CI: system checks and tests on every push
 ├── manage.py
-└── requirements.txt
+├── requirements.txt     # runtime dependencies
+└── requirements-docker.txt  # adds the PostgreSQL driver and gunicorn
 ```
 
 ## Design notes
@@ -190,13 +219,15 @@ center-management/
 - **Listing activities costs three queries, not one per row.** The list view
   annotates the enrolment count and the model reuses that annotation when it
   is there, so `places_left` does not turn into an N+1.
+- **One settings module, two databases.** The engine is picked from the
+  environment instead of from a `settings_prod.py`, so the code that runs in the
+  container is exactly the code that runs locally.
 - **Read is public, write is authenticated.** A visitor can browse the
   programme; only signed-in staff change it. Logging out is a POST form, as
   Django requires since 4.1.
 
 ## Roadmap
 
-- [ ] Docker Compose setup with PostgreSQL.
 - [ ] REST API with Django REST Framework.
 
 ## Licence

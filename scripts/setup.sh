@@ -40,6 +40,15 @@ if [ "${1:-}" = "--demo" ]; then
   "$VENV/bin/python" manage.py seed_demo
 fi
 
+# An account can be created without prompts by exporting the usual Django
+# variables, which is what a CI job or a container would do:
+#   DJANGO_SUPERUSER_USERNAME=admin DJANGO_SUPERUSER_PASSWORD=... ./scripts/setup.sh
+if [ -n "${DJANGO_SUPERUSER_USERNAME:-}" ] && [ -n "${DJANGO_SUPERUSER_PASSWORD:-}" ]; then
+  echo "==> Creating superuser ${DJANGO_SUPERUSER_USERNAME}"
+  "$VENV/bin/python" manage.py createsuperuser --no-input \
+    --email "${DJANGO_SUPERUSER_EMAIL:-admin@example.com}" || true
+fi
+
 echo
 echo "Done. Next steps:"
 echo "  make superuser   # create an account to sign in with"

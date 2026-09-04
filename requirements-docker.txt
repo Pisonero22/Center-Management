@@ -1,0 +1,6 @@
+# Dependencies that only the container needs: a PostgreSQL driver and a
+# production WSGI server. Installed on top of requirements.txt.
+-r requirements.txt
+
+psycopg[binary]==3.3.5
+gunicorn==26.2.0

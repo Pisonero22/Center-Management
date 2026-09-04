@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-center_management}
+      POSTGRES_USER: ${POSTGRES_USER:-center}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-center}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-center} -d ${POSTGRES_DB:-center_management}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-insecure-key-for-local-containers}
+      DJANGO_DEBUG: "false"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      POSTGRES_DB: ${POSTGRES_DB:-center_management}
+      POSTGRES_USER: ${POSTGRES_USER:-center}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-center}
+      POSTGRES_HOST: db
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
