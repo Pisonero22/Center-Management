@@ -5,11 +5,13 @@
 {% block content %}
   <h1>Rooms</h1>
 
-  {% if user.is_authenticated %}
-  <a class="btn" href="{% url 'room-create' %}">New room</a>
-  {% endif %}
+  <div class="toolbar">
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'room-create' %}">New room</a>
+    {% endif %}
+  </div>
 
-  <ul>
+  <ul class="card-list">
     {% for room in rooms %}
       <li>
         <a href="{% url 'room-detail' room.pk %}">{{ room.name }} — capacity {{ room.capacity }}</a>

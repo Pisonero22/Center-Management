@@ -30,11 +30,13 @@
 
   <hr>
 
-  {% if user.is_authenticated %}
-  <a class="btn" href="{% url 'activity-create' %}">New activity</a>
-  {% endif %}
+  <div class="toolbar">
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'activity-create' %}">New activity</a>
+    {% endif %}
+  </div>
 
-  <ul>
+  <ul class="card-list">
     {% for activity in activities %}
       <li>
         <a href="{% url 'activity-detail' activity.pk %}">

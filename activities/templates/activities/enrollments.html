@@ -5,7 +5,7 @@
 {% block content %}
   <h1>Members enrolled in {{ activity.name }}</h1>
 
-  <ul>
+  <ul class="card-list">
     {% for enrollment in enrollments %}
       <li>
         <a href="{% url 'member-detail' enrollment.member.pk %}">{{ enrollment.member.full_name }}</a>

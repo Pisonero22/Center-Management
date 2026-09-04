@@ -275,3 +275,50 @@ blockquote {
   gap: 1rem;
   margin: 1.5em 0;
 }
+
+/* Card lists, toolbars and detail panels */
+.card-list {
+  list-style: none;
+  margin-left: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.card-list li {
+  margin: 0;
+  padding: 0.85em 1.1em;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.card-list li .tag,
+.card-list li .inline-form {
+  margin-left: auto;
+}
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.2em 0;
+}
+.panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.2em 1.4em;
+  margin-bottom: 1.5em;
+}
+.panel p {
+  margin-bottom: 0.5em;
+}
+.panel p:last-child {
+  margin-bottom: 0;
+}
+.lead {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 1.5em;
+}

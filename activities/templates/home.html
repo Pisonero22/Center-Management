@@ -5,6 +5,9 @@
 {% block content %}
   <div class="home-hero">
     <h1>Welcome to Center Management</h1>
-    <p>Activities, rooms, instructors and enrolments for a cultural centre.</p>
+    <p class="lead">Activities, rooms, instructors and enrolments for a cultural centre.</p>
+    <p>
+      <a class="btn" href="{% url 'activity-list' %}">Browse the programme</a>
+    </p>
   </div>
 {% endblock %}

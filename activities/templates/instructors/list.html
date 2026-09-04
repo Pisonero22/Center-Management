@@ -5,11 +5,13 @@
 {% block content %}
   <h1>Instructors</h1>
 
-  {% if user.is_authenticated %}
-  <a class="btn" href="{% url 'instructor-create' %}">New instructor</a>
-  {% endif %}
+  <div class="toolbar">
+    {% if user.is_authenticated %}
+      <a class="btn" href="{% url 'instructor-create' %}">New instructor</a>
+    {% endif %}
+  </div>
 
-  <ul>
+  <ul class="card-list">
     {% for instructor in instructors %}
       <li>
         <a href="{% url 'instructor-detail' instructor.pk %}">{{ instructor.full_name }} — {{ instructor.specialty }}</a>

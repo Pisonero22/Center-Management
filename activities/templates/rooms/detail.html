@@ -5,9 +5,11 @@
 {% block content %}
   <h1>{{ room.name }}</h1>
 
-  <p><strong>Capacity:</strong> {{ room.capacity }}</p>
-  <p><strong>Location:</strong> {{ room.location }}</p>
-  <p><strong>Managed by:</strong> {{ room.manager|default:"Not assigned" }}</p>
+  <div class="panel">
+    <p><strong>Capacity:</strong> {{ room.capacity }}</p>
+    <p><strong>Location:</strong> {{ room.location }}</p>
+    <p><strong>Managed by:</strong> {{ room.manager|default:"Not assigned" }}</p>
+  </div>
 
   <p>
     {% if user.is_authenticated %}

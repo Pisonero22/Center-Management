@@ -5,16 +5,18 @@
 {% block content %}
   <h1>{{ member.full_name }}</h1>
 
-  <p><strong>Email:</strong> {{ member.email }}</p>
-  <p><strong>Phone:</strong> {{ member.phone|default:"—" }}</p>
+  <div class="panel">
+    <p><strong>Email:</strong> {{ member.email }}</p>
+    <p><strong>Phone:</strong> {{ member.phone|default:"—" }}</p>
 
-  <p><strong>Activities:</strong>
-    {% for activity in member.activities.all %}
-      <a href="{% url 'activity-detail' activity.pk %}">{{ activity.name }}</a>{% if not forloop.last %}, {% endif %}
-    {% empty %}
-      none
-    {% endfor %}
-  </p>
+    <p><strong>Activities:</strong>
+      {% for activity in member.activities.all %}
+        <a href="{% url 'activity-detail' activity.pk %}">{{ activity.name }}</a>{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        none
+      {% endfor %}
+    </p>
+  </div>
 
   <p>
     {% if user.is_authenticated %}

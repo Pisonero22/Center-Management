@@ -5,36 +5,38 @@
 {% block content %}
   <h1>{{ activity.name }}</h1>
 
-  <p><strong>Category:</strong> {{ activity.get_category_display }}</p>
-  <p><strong>Starts at:</strong> {{ activity.starts_at|date:"d M Y, H:i" }}</p>
-  <p><strong>Duration:</strong> {{ activity.duration }}</p>
-  <p><strong>Description:</strong> {{ activity.description|default:"—" }}</p>
-  <p><strong>Capacity:</strong> {{ activity.capacity }} places
-    {% if activity.is_full %}
-      <span class="tag tag-full">full</span>
-    {% else %}
-      <span class="tag">{{ activity.places_left }} left</span>
-    {% endif %}
-  </p>
+  <div class="panel">
+    <p><strong>Category:</strong> {{ activity.get_category_display }}</p>
+    <p><strong>Starts at:</strong> {{ activity.starts_at|date:"d M Y, H:i" }}</p>
+    <p><strong>Duration:</strong> {{ activity.duration }}</p>
+    <p><strong>Description:</strong> {{ activity.description|default:"—" }}</p>
+    <p><strong>Capacity:</strong> {{ activity.capacity }} places
+      {% if activity.is_full %}
+        <span class="tag tag-full">full</span>
+      {% else %}
+        <span class="tag">{{ activity.places_left }} left</span>
+      {% endif %}
+    </p>
 
-  <p><strong>Instructor:</strong> {{ activity.instructor|default:"Not assigned" }}</p>
-  <p><strong>Main room:</strong> {{ activity.main_room|default:"Not assigned" }}</p>
+    <p><strong>Instructor:</strong> {{ activity.instructor|default:"Not assigned" }}</p>
+    <p><strong>Main room:</strong> {{ activity.main_room|default:"Not assigned" }}</p>
 
-  <p><strong>Secondary rooms:</strong>
-    {% for room in activity.secondary_rooms.all %}
-      {{ room.name }}{% if not forloop.last %}, {% endif %}
-    {% empty %}
-      none
-    {% endfor %}
-  </p>
+    <p><strong>Secondary rooms:</strong>
+      {% for room in activity.secondary_rooms.all %}
+        {{ room.name }}{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        none
+      {% endfor %}
+    </p>
 
-  <p><strong>Enrolled members:</strong>
-    {% for member in activity.members.all %}
-      {{ member.full_name }}{% if not forloop.last %}, {% endif %}
-    {% empty %}
-      none
-    {% endfor %}
-  </p>
+    <p><strong>Enrolled members:</strong>
+      {% for member in activity.members.all %}
+        {{ member.full_name }}{% if not forloop.last %}, {% endif %}
+      {% empty %}
+        none
+      {% endfor %}
+    </p>
+  </div>
 
   <p>
     <a class="btn" href="{% url 'activity-enrollments' activity.pk %}">View enrolments</a>
