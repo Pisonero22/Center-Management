@@ -5,6 +5,7 @@ Four entities and one explicit join table: members enrol in activities through
 the same member cannot be enrolled twice in the same activity.
 """
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 
@@ -118,6 +119,31 @@ class Activity(models.Model):
 
     def get_absolute_url(self):
         return reverse("activity-detail", kwargs={"pk": self.pk})
+
+    @property
+    def places_taken(self):
+        return self.enrollments.count()
+
+    @property
+    def places_left(self):
+        return max(self.capacity - self.places_taken, 0)
+
+    @property
+    def is_full(self):
+        return self.places_taken >= self.capacity
+
+    def clean(self):
+        """An activity cannot offer more places than its main room holds."""
+        super().clean()
+        if self.main_room and self.capacity > self.main_room.capacity:
+            raise ValidationError(
+                {
+                    "capacity": (
+                        f"{self.main_room} holds {self.main_room.capacity} people, "
+                        f"so this activity cannot offer {self.capacity} places."
+                    )
+                }
+            )
 
 
 class Enrollment(models.Model):

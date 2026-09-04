@@ -40,6 +40,11 @@
         <a href="{% url 'activity-detail' activity.pk %}">
           {{ activity.name }} ({{ activity.get_category_display }}) — {{ activity.starts_at|date:"d M Y, H:i" }}
         </a>
+        {% if activity.is_full %}
+          <span class="tag tag-full">full</span>
+        {% else %}
+          <span class="tag">{{ activity.places_left }} left</span>
+        {% endif %}
       </li>
     {% empty %}
       <li>No activities match those filters.</li>

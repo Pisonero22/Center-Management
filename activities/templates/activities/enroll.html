@@ -5,6 +5,10 @@
 {% block content %}
   <h1>Enrol a member in {{ activity.name }}</h1>
 
+  <p class="muted">
+    {{ activity.places_taken }} of {{ activity.capacity }} places taken.
+  </p>
+
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}

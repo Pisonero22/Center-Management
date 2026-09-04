@@ -21,6 +21,8 @@ domain model and a documented setup.
   demo dataset in one line.
 - **Authentication**: the catalogue is public, but creating, editing, deleting
   and enrolling require a signed-in user.
+- **Capacity is enforced**: an activity refuses enrolments once it is full, and
+  it cannot offer more places than its main room holds.
 
 ## Data model
 
@@ -139,13 +141,15 @@ center-management/
   a CSRF token, not a link — a GET request should never change state.
 - **The database enforces the invariants it can.** Uniqueness of an enrolment is
   a constraint, not only a check in the view.
+- **The last place is a race.** Counting the enrolments and inserting the new
+  one happen inside a single transaction with a row lock, so two people
+  clicking at the same time cannot both take the last place.
 - **Read is public, write is authenticated.** A visitor can browse the
   programme; only signed-in staff change it. Logging out is a POST form, as
   Django requires since 4.1.
 
 ## Roadmap
 
-- [ ] Enforce the capacity of an activity when enrolling.
 - [ ] Pagination and query optimisation on the list views.
 - [ ] Test suite covering the models, the enrolment rules and the views.
 - [ ] Docker Compose setup with PostgreSQL and a CI workflow.
