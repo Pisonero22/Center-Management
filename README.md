@@ -92,8 +92,8 @@ level that the same person cannot take two places in one activity.
 ## Getting started
 
 ```bash
-git clone https://github.com/Pisonero22/center-management.git
-cd center-management
+git clone https://github.com/Pisonero22/Center-Management.git
+cd Center-Management
 
 python3 -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
