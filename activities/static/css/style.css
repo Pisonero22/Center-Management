@@ -322,3 +322,9 @@ blockquote {
   color: var(--muted);
   margin-bottom: 1.5em;
 }
+
+/* Button rows: keep them from touching each other */
+p > .btn,
+p > button {
+  margin: 0 0.4rem 0.4rem 0;
+}
