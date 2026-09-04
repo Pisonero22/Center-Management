@@ -27,6 +27,14 @@ domain model and a documented setup.
   querysets that load their related objects up front instead of one row at a
   time.
 
+## Screenshots
+
+| Activity list | Activity detail |
+| --- | --- |
+| ![Activity list](docs/screenshots/activities.png) | ![Activity detail](docs/screenshots/activity-detail.png) |
+
+![Enrolments of an activity](docs/screenshots/enrollments.png)
+
 ## Data model
 
 ```mermaid
