@@ -89,25 +89,29 @@ erDiagram
         string name
         int capacity
         string location
-        fk manager "Instructor, nullable"
+        int manager_id FK
     }
     ACTIVITY {
         string name
-        string category "choices"
+        string category
         datetime starts_at
-        duration duration
+        interval duration
         int capacity
+        int instructor_id FK
+        int main_room_id FK
     }
     ENROLLMENT {
-        fk member
-        fk activity
+        int member_id FK
+        int activity_id FK
         datetime created_at
     }
 ```
 
 `Enrollment` is the `through` model of the many-to-many between `Member` and
 `Activity`. A `UniqueConstraint` on `(member, activity)` enforces at database
-level that the same person cannot take two places in one activity.
+level that the same person cannot take two places in one activity. `category` is
+a fixed set of choices, and every foreign key above is nullable except the two
+that make up an enrolment.
 
 ## Stack
 
